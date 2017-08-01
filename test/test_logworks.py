@@ -12,13 +12,12 @@ class TestLogger(unittest.TestCase):
 
     # Setup and teardown:
     def setUp(self):
-        self.texts = ["something", "yadda yadda", "", None]
-        self.colors = ["name", "info", "warning", "error"]
-        self.conf_colors = {
-            "name": 1,
-            "info": 2,
-            "warning": 3,
-            "error": 4,
+        self.TEXTS = ["something", "yadda yadda", "", None]
+        self.COLORS = {
+            "name": 31,
+            "info": 32,
+            "warning": 33,
+            "error": 34,
         }
 
     def tearDown(self):
@@ -52,7 +51,7 @@ class TestLogger(unittest.TestCase):
         logger.logger.info = mock.Mock()
         logger.with_info_color = mock.Mock()
 
-        for text in self.texts:
+        for text in self.TEXTS:
             # Prepare:
             logger.logger.info.reset_mock()
             logger.with_info_color.reset_mock()
@@ -71,7 +70,7 @@ class TestLogger(unittest.TestCase):
         logger.logger.warning = mock.Mock()
         logger.with_warning_color = mock.Mock()
 
-        for text in self.texts:
+        for text in self.TEXTS:
             # Prepare:
             logger.logger.warning.reset_mock()
             logger.with_warning_color.reset_mock()
@@ -90,7 +89,7 @@ class TestLogger(unittest.TestCase):
         logger.logger.error = mock.Mock()
         logger.with_error_color = mock.Mock()
 
-        for text in self.texts:
+        for text in self.TEXTS:
             # Prepare:
             logger.logger.error.reset_mock()
             logger.with_error_color.reset_mock()
@@ -104,13 +103,13 @@ class TestLogger(unittest.TestCase):
             logger.with_error_color.assert_called_once()
 
 
-    # Text colorizers:
+    # Test colorizers:
     def test_with_name_color(self):
         # Prepare:
         logger = logworks.Logger()
 
         # Run:
-        for text in self.texts:
+        for text in self.TEXTS:
             ret = logger.with_name_color(text)
 
             # Assert:
@@ -121,7 +120,7 @@ class TestLogger(unittest.TestCase):
         logger = logworks.Logger()
 
         # Run:
-        for text in self.texts:
+        for text in self.TEXTS:
             ret = logger.with_info_color(text)
 
             # Assert:
@@ -132,7 +131,7 @@ class TestLogger(unittest.TestCase):
         logger = logworks.Logger()
 
         # Run:
-        for text in self.texts:
+        for text in self.TEXTS:
             ret = logger.with_warning_color(text)
 
             # Assert:
@@ -143,33 +142,122 @@ class TestLogger(unittest.TestCase):
         logger = logworks.Logger()
 
         # Run:
-        for text in self.texts:
+        for text in self.TEXTS:
             ret = logger.with_error_color(text)
 
             # Assert:
             self.assertIn(str(text), str(ret))
 
+    def test_colorize_as_with_colors(self):
+        # Prepare:
+        logger = logworks.Logger()
+        with mock.patch("logworks.Logger.use_colors"): # to be able to override it (being a @property)
+            logger.use_colors = True
+            logger.conf = {"colors": self.COLORS}
+
+            # Run:
+            for which in self.COLORS:
+                ret = logger._colorize_as(which, which)
+
+                # Assert:
+                self.assertIn(which, ret)
+                self.assertNotEqual(which, ret)
+
+    def test_colorize_as_without_colors(self):
+        # Prepare:
+        logger = logworks.Logger()
+        with mock.patch("logworks.Logger.use_colors"): # to be able to override it (being a @property)
+            logger.use_colors = False
+            logger.conf = {"colors": self.COLORS}
+
+            # Run:
+            for which in self.COLORS:
+                ret = logger._colorize_as(which, which)
+
+                # Assert:
+                self.assertEqual(which, ret)
+
     def test_color_for_can(self):
         # Prepare:
         logger = logworks.Logger()
-        logger.conf = {"colors": self.conf_colors}
+        logger.conf = {"colors": self.COLORS}
 
-        # Run:
-        for which in self.colors:
+        for which in self.COLORS:
+            # Run:
             ret = logger._color_for(which)
 
             # Assert:
-            self.assertEqual(ret, self.conf_colors[which])
+            self.assertEqual(ret, self.COLORS[which])
 
     def test_color_for_cant(self):
         # Prepare:
         logger = logworks.Logger()
         logger.conf = {}
 
-        # Run:
-        for which in self.colors:
+        for which in self.COLORS:
+            # Run:
             ret = logger._color_for(which)
 
             # Assert:
             self.assertEqual(ret, 0)
+
+
+    # Test other:
+    def test_use_colors_no_conf(self):
+        # Prepare:
+        logger = logworks.Logger()
+
+        # Assert:
+        self.assertFalse(logger.use_colors)
+
+    def test_use_colors_empty_conf(self):
+        # Prepare:
+        logger = logworks.Logger()
+        logger.conf = {}
+
+        # Assert:
+        self.assertFalse(logger.use_colors)
+
+    def test_use_colors_nocolor_overrides(self):
+        # Prepare:
+        logger = logworks.Logger()
+        logger.nocolor = True
+        logger.conf = {"colorize": True}
+
+        # Assert:
+        self.assertFalse(logger.use_colors)
+
+    def test_use_colors_yes(self):
+        # Prepare:
+        logger = logworks.Logger()
+        logger.nocolor = False
+        logger.conf = {"colorize": True}
+
+        # Assert:
+        self.assertTrue(logger.use_colors)
+
+    def test_read_conf_no_conf(self):
+        # Run:
+        ret = logworks.Logger.read_conf()
+
+        # Assert:
+        self.assertEqual(ret, {})
+
+    def test_read_conf_cant_read(self):
+        with mock.patch("sys.stdout"):
+            # Run:
+            ret = logworks.Logger.read_conf("file_which_does_not_exist")
+            
+        # Assert:
+        self.assertEqual(ret, {})
+
+    def test_read_conf_ok(self):
+        # Run:
+        with mock.patch("__builtin__.open") as mock_open:
+            mock_open.return_value = mock.MagickMock(spec=file)
+            mock_open.return_value.__enter__.return_value = "abc"
+            ret = logworks.Logger.read_conf("file_which_does_not_exist")
+            
+        # Assert:
+        self.assertEqual(ret, {})
 
