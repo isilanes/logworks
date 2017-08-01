@@ -1,0 +1,10 @@
+# Advised mode, with coverage:
+bash test/test.sh
+
+# Run a single test module, class or even method:
+python -m unittest -v test.test_logworks
+python -m unittest -v test.test_logworks.Testlogger
+python -m unittest -v test.test_logworks.Testlogger.test_constructor_no_args
+
+# Run all tests:
+python -m unittest discover -s test -v
