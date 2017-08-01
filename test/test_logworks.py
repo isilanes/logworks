@@ -201,6 +201,23 @@ class TestLogger(unittest.TestCase):
             # Assert:
             self.assertEqual(ret, 0)
 
+    def test_colorize(self):
+        # Run:
+        for text in self.TEXTS:
+            ret = logworks.Logger.colorize(text, 666)
+            
+            # Assert:
+            self.assertIn(str(text), str(ret))
+            self.assertIn("666", str(ret))
+
+    def test_colorize_none(self):
+        # Run:
+        for text in self.TEXTS:
+            ret = logworks.Logger.colorize(text, None)
+            
+            # Assert:
+            self.assertEqual(ret, text)
+
 
     # Test other:
     def test_use_colors_no_conf(self):
@@ -236,6 +253,20 @@ class TestLogger(unittest.TestCase):
         # Assert:
         self.assertTrue(logger.use_colors)
 
+    def test_read_conf(self):
+        # Prepare:
+        conf_data = {"a": 3}
+        conf_string = '{"a": 3}'
+        fn = "file_which_does_not_exist"
+
+        # Run:
+        with mock.patch("builtins.open", mock.mock_open(read_data=conf_string)) as mock_file:
+            ret = logworks.Logger.read_conf(fn)
+            mock_file.assert_called_with(fn)
+            
+        # Assert:
+        self.assertEqual(ret, conf_data)
+
     def test_read_conf_no_conf(self):
         # Run:
         ret = logworks.Logger.read_conf()
@@ -246,16 +277,6 @@ class TestLogger(unittest.TestCase):
     def test_read_conf_cant_read(self):
         with mock.patch("sys.stdout"):
             # Run:
-            ret = logworks.Logger.read_conf("file_which_does_not_exist")
-            
-        # Assert:
-        self.assertEqual(ret, {})
-
-    def test_read_conf_ok(self):
-        # Run:
-        with mock.patch("__builtin__.open") as mock_open:
-            mock_open.return_value = mock.MagickMock(spec=file)
-            mock_open.return_value.__enter__.return_value = "abc"
             ret = logworks.Logger.read_conf("file_which_does_not_exist")
             
         # Assert:
