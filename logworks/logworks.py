@@ -1,6 +1,13 @@
 # Standard libs:
 import json
 import logging
+import pkg_resources
+
+# Version:
+try:
+    __version__ = pkg_resources.get_distribution("logworks").version
+except pkg_resources.DistributionNotFound: # pkg not installed
+    __version__ = None
 
 # Classes:
 class Logger(object):
