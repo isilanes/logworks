@@ -9,32 +9,61 @@ try:
 except pkg_resources.DistributionNotFound: # pkg not installed
     __version__ = None
 
+# Globals:
+DEFAULT_FORMATTER = logging.Formatter(
+        fmt='{asctime} {colored_levelname} {message}',
+        datefmt="%Y-%m-%d %H:%M:%S",
+        style="{"
+)
+
+
+# Functions:
+def example():
+    """Show some examples."""
+
+    print("Code:\n")
+    code  = "from logworks import logworks\n"
+    code += "logger = logworks.Logger()\n"
+    code += "logger.info(\"This is some info\")\n"
+    code += "logger.warning(\"Danger! Danger!\")\n"
+    code += "logger.error(\"Something went wrong\")"
+    print(code)
+
+    print("\nYields:\n")
+    logger = Logger()
+    logger.info("This is some info")
+    logger.warning("Danger! Danger!")
+    logger.error("Something went wrong")
+
+    print("\nCustom formatter:\n")
+    formatter = logging.Formatter(
+            fmt='{asctime} {colored_levelname} {message}',
+            datefmt="%H:%M:%S",
+            style="{"
+    )
+    logger = Logger(formatter=formatter, which_logger="altered")
+    logger.info("This is some custom info")
+
+
 # Classes:
 class Logger(object):
     """Class to hold logging stuff."""
     
-    # Class variables:
-    FORMATTER = logging.Formatter(
-            fmt='{asctime} {colored_levelname} {message}',
-            datefmt="%Y-%m-%d %H:%M:%S",
-            style="{")
-
-
     # Constructor:
-    def __init__(self, conf_fn=None, nocolor=False):
+    def __init__(self, conf_fn=None, use_color=True, formatter=DEFAULT_FORMATTER, which_logger=__name__):
         # If given a configuration file name, try to read it:
         self.conf = Logger.read_conf(conf_fn)
 
         # Avoid colors?:
-        self.nocolor = nocolor
+        self.no_color = not use_color
 
         # Logger object:
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(which_logger)
         self.logger.setLevel(logging.DEBUG)
 
         # Console output handler:
         ch = logging.StreamHandler()
-        ch.setFormatter(self.FORMATTER)
+        ch.setFormatter(formatter)
         ch.setLevel(logging.DEBUG)
         self.logger.addHandler(ch)
 
@@ -112,7 +141,7 @@ class Logger(object):
         """Return True if colors should be used in terminal.
         False otherwise.
         """
-        if self.nocolor:
+        if self.no_color:
             return False
 
         return "colorize" in self.conf and self.conf["colorize"]
@@ -143,4 +172,9 @@ class Logger(object):
             return text
 
         return "\033[{n}m{t}\033[0m".format(t=text, n=color_number)
+
+
+# If called directly, show some examples:
+if __name__ == "__main__":
+    example()
 
