@@ -11,37 +11,47 @@ except pkg_resources.DistributionNotFound: # pkg not installed
 
 # Globals:
 DEFAULT_FORMATTER = logging.Formatter(
-        fmt='{asctime} {colored_levelname} {message}',
-        datefmt="%Y-%m-%d %H:%M:%S",
-        style="{"
+    fmt='{asctime} {clevelname} {message}',
+    datefmt="%Y-%m-%d %H:%M:%S",
+    style="{"
 )
 
-
 # Functions:
-def example():
+def examples():
     """Show some examples."""
 
-    print("Code:\n")
-    code  = "from logworks import logworks\n"
-    code += "logger = logworks.Logger()\n"
-    code += "logger.info(\"This is some info\")\n"
-    code += "logger.warning(\"Danger! Danger!\")\n"
-    code += "logger.error(\"Something went wrong\")"
-    print(code)
+    print("#\n# Some examples\n#\n")
 
-    print("\nYields:\n")
+    print("""Code:\n
+    logger = Logger()
+    logger.info("This is some info")
+    logger.warning("Danger! Danger!")
+    logger.error("Something went wrong")
+    """)
+
+    print("Yields:\n")
     logger = Logger()
     logger.info("This is some info")
     logger.warning("Danger! Danger!")
     logger.error("Something went wrong")
 
-    print("\nCustom formatter:\n")
-    formatter = logging.Formatter(
-            fmt='{asctime} {colored_levelname} {message}',
-            datefmt="%H:%M:%S",
-            style="{"
+    print("""\nCustom formatter:\n
+    myformatter = logging.Formatter(
+        fmt='{clevelname} - {asctime} - {message}',
+        datefmt="%H:%M:%S",
+        style="{"
     )
-    logger = Logger(formatter=formatter, which_logger="altered")
+    logger = Logger(myformatter=formatter)
+    logger.info("This is some custom info")
+    """)
+
+    print("Yields:\n")
+    myformatter = logging.Formatter(
+        fmt='{clevelname} - {asctime} - {message}',
+        datefmt="%H:%M:%S",
+        style="{"
+    )
+    logger = Logger(formatter=myformatter, which_logger="example2")
     logger.info("This is some custom info")
 
 
@@ -73,7 +83,7 @@ class Logger(object):
         """Log (print) 'text' as info."""
 
         extra = {
-            "colored_levelname": self.with_info_color("[INFO]"),
+            "clevelname": self.with_info_color("[INFO]"),
         }
 
         self.logger.info(text, extra=extra)
@@ -82,7 +92,7 @@ class Logger(object):
         """Log (print) 'text' as warning."""
 
         extra = {
-            "colored_levelname": self.with_warning_color("[WARNING]"),
+            "clevelname": self.with_warning_color("[WARNING]"),
         }
 
         self.logger.warning(text, extra=extra)
@@ -91,7 +101,7 @@ class Logger(object):
         """Log (print) 'text' as error."""
 
         extra = {
-            "colored_levelname": self.with_error_color("[ERROR]"),
+            "clevelname": self.with_error_color("[ERROR]"),
         }
 
         self.logger.error(text, extra=extra)
@@ -176,5 +186,5 @@ class Logger(object):
 
 # If called directly, show some examples:
 if __name__ == "__main__":
-    example()
+    examples()
 
