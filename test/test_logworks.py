@@ -30,17 +30,17 @@ class TestLogger(unittest.TestCase):
         logger = logworks.Logger()
 
         # Assert:
-        self.assertEqual(logger.conf, {})
-        self.assertEqual(logger.nocolor, False)
+        self.assertIsInstance(logger.conf, dict)
+        self.assertEqual(logger.no_color, False)
         self.assertIsInstance(logger.logger, logging.Logger)
     
     def test_constructor_no_color(self):
         # Run:
-        logger = logworks.Logger(nocolor=True)
+        logger = logworks.Logger(use_color=False)
 
         # Assert:
-        self.assertEqual(logger.conf, {})
-        self.assertEqual(logger.nocolor, True)
+        self.assertIsInstance(logger.conf, dict)
+        self.assertEqual(logger.no_color, True)
         self.assertIsInstance(logger.logger, logging.Logger)
     
 
@@ -225,7 +225,7 @@ class TestLogger(unittest.TestCase):
         logger = logworks.Logger()
 
         # Assert:
-        self.assertFalse(logger.use_colors)
+        self.assertTrue(logger.use_colors)
 
     def test_use_colors_empty_conf(self):
         # Prepare:
@@ -238,7 +238,7 @@ class TestLogger(unittest.TestCase):
     def test_use_colors_nocolor_overrides(self):
         # Prepare:
         logger = logworks.Logger()
-        logger.nocolor = True
+        logger.no_color = True
         logger.conf = {"colorize": True}
 
         # Assert:
