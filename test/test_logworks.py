@@ -2,6 +2,7 @@
 import mock
 import logging
 import unittest
+from io import StringIO
 
 # Our libs:
 from logworks import logworks
@@ -12,6 +13,7 @@ class TestLogger(unittest.TestCase):
 
     # Setup and teardown:
     def setUp(self):
+
         self.TEXTS = ["something", "yadda yadda", "", None]
         self.COLORS = {
             "name": 31,
@@ -282,3 +284,34 @@ class TestLogger(unittest.TestCase):
         # Assert:
         self.assertEqual(ret, {})
 
+class TestMain(unittest.TestCase):
+    """Test stuff outside Logger() class."""
+
+    # Test version:
+    def test_version_ok(self):
+        self.assertIsInstance(logworks.__version__, str)
+
+    def test_version_ko(self):
+        # Preprare:
+        import importlib
+        import pkg_resources
+        
+        # Run:
+        with mock.patch("pkg_resources.get_distribution", side_effect=pkg_resources.DistributionNotFound) as mock_pkg:
+            importlib.reload(logworks)
+        
+        # Assert:
+        self.assertIsNone(logworks.__version__)
+
+        # Clean:
+        importlib.reload(logworks)
+
+    # Test examples:
+    def test_examples(self):
+        # Run:
+        with mock.patch("sys.stdout", new_callable=StringIO) as stdout, mock.patch("sys.stderr", new_callable=StringIO) as stderr:
+            logworks.examples()
+
+        # Assert:
+        self.assertIsInstance(stdout.getvalue(), str)
+        self.assertIsInstance(stderr.getvalue(), str)
