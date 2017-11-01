@@ -15,6 +15,15 @@ DEFAULT_FORMATTER = logging.Formatter(
     datefmt="%Y-%m-%d %H:%M:%S",
     style="{"
 )
+DEFAULT_CONF = {
+    "colorize": True,
+    "colors": {
+        "info": 34,
+        "warning": 33,
+        "error": 31,
+        "name": 36,
+    }
+}
 
 # Functions:
 def examples():
@@ -23,7 +32,8 @@ def examples():
     print("#\n# Some examples\n#\n")
 
     print("""Code:\n
-    logger = Logger()
+    from logworks import logworks
+    logger = logworks.Logger()
     logger.info("This is some info")
     logger.warning("Danger! Danger!")
     logger.error("Something went wrong")
@@ -35,13 +45,29 @@ def examples():
     logger.warning("Danger! Danger!")
     logger.error("Something went wrong")
 
+    print("""\nNo colors:\n
+    from logworks import logworks
+    logger = logworks.Logger(use_color=False)
+    logger.info("This is some info")
+    logger.warning("Danger! Danger!")
+    logger.error("Something went wrong")
+    """)
+
+    print("Yields:\n")
+    logger = Logger(use_color=False, which_logger="example2")
+    logger.info("This is some info")
+    logger.warning("Danger! Danger!")
+    logger.error("Something went wrong")
+
     print("""\nCustom formatter:\n
+    import logging
+    from logworks import logworks
     myformatter = logging.Formatter(
         fmt='{clevelname} - {asctime} - {message}',
         datefmt="%H:%M:%S",
         style="{"
     )
-    logger = Logger(myformatter=formatter)
+    logger = logworks.Logger(formatter=myformatter)
     logger.info("This is some custom info")
     """)
 
@@ -51,7 +77,7 @@ def examples():
         datefmt="%H:%M:%S",
         style="{"
     )
-    logger = Logger(formatter=myformatter, which_logger="example2")
+    logger = Logger(formatter=myformatter, which_logger="example3")
     logger.info("This is some custom info")
 
 
@@ -62,7 +88,10 @@ class Logger(object):
     # Constructor:
     def __init__(self, conf_fn=None, use_color=True, formatter=DEFAULT_FORMATTER, which_logger=__name__):
         # If given a configuration file name, try to read it:
-        self.conf = Logger.read_conf(conf_fn)
+        if conf_fn:
+            self.conf = Logger.read_conf(conf_fn)
+        else:
+            self.conf = DEFAULT_CONF
 
         # Avoid colors?:
         self.no_color = not use_color
