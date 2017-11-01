@@ -45,6 +45,17 @@ class TestLogger(unittest.TestCase):
         self.assertEqual(logger.no_color, True)
         self.assertIsInstance(logger.logger, logging.Logger)
     
+    def test_constructor_with_conf_file(self):
+        # Run:
+        with mock.patch("sys.stdout", new_callable=StringIO) as stdout:
+            logger = logworks.Logger(conf_fn="whatever")
+
+        # Assert:
+        self.assertIsInstance(stdout.getvalue(), str)
+        self.assertIsInstance(logger.conf, dict)
+        self.assertEqual(logger.conf, {})
+        self.assertIsInstance(logger.logger, logging.Logger)
+    
 
     # Test print shortcuts:
     def test_info(self):
@@ -305,6 +316,7 @@ class TestMain(unittest.TestCase):
 
         # Clean:
         importlib.reload(logworks)
+
 
     # Test examples:
     def test_examples(self):
