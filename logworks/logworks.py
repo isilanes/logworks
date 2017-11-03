@@ -22,6 +22,7 @@ DEFAULT_CONF = {
         "warning": 33,
         "error": 31,
         "name": 36,
+        "ok": 32,
     }
 }
 
@@ -35,6 +36,7 @@ def examples():
     from logworks import logworks
     logger = logworks.Logger()
     logger.info("This is some info")
+    logger.ok("Everything is ok")
     logger.warning("Danger! Danger!")
     logger.error("Something went wrong")
     """)
@@ -42,6 +44,7 @@ def examples():
     print("Yields:\n")
     logger = Logger()
     logger.info("This is some info")
+    logger.ok("Everything is ok")
     logger.warning("Danger! Danger!")
     logger.error("Something went wrong")
 
@@ -49,6 +52,7 @@ def examples():
     from logworks import logworks
     logger = logworks.Logger(use_color=False)
     logger.info("This is some info")
+    logger.ok("Everything is ok")
     logger.warning("Danger! Danger!")
     logger.error("Something went wrong")
     """)
@@ -56,6 +60,7 @@ def examples():
     print("Yields:\n")
     logger = Logger(use_color=False, which_logger="example2")
     logger.info("This is some info")
+    logger.ok("Everything is ok")
     logger.warning("Danger! Danger!")
     logger.error("Something went wrong")
 
@@ -117,6 +122,15 @@ class Logger(object):
 
         self.logger.info(text, extra=extra)
 
+    def ok(self, text):
+        """Log (print) 'text' as OK."""
+
+        extra = {
+            "clevelname": self.with_ok_color("[OK]"),
+        }
+
+        self.logger.info(text, extra=extra)
+
     def warning(self, text):
         """Log (print) 'text' as warning."""
 
@@ -144,6 +158,11 @@ class Logger(object):
         """Return 'text' with color for 'info'."""
 
         return self._colorize_as(text, "info")
+
+    def with_ok_color(self, text):
+        """Return 'text' with color for 'ok'."""
+
+        return self._colorize_as(text, "ok")
 
     def with_error_color(self, text):
         """Return 'text' with color for 'error'."""
