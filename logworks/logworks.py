@@ -18,6 +18,7 @@ DEFAULT_FORMATTER = logging.Formatter(
 DEFAULT_CONF = {
     "colorize": True,
     "colors": {
+        "debug": 37,
         "info": 34,
         "warning": 33,
         "error": 31,
@@ -35,18 +36,30 @@ def examples():
     print("""Code:\n
     from logworks import logworks
     logger = logworks.Logger()
+    logger.debug("Verbose debug")
     logger.info("This is some info")
     logger.ok("Everything is ok")
     logger.warning("Danger! Danger!")
     logger.error("Something went wrong")
     """)
 
-    print("Yields:\n")
+    print("Yields (no debug):\n")
     logger = Logger()
     logger.info("This is some info")
     logger.ok("Everything is ok")
     logger.warning("Danger! Danger!")
     logger.error("Something went wrong")
+
+    print("""Code:\n
+    from logworks import logworks
+    logger = Logger(level=logging.DEBUG)
+    logger.debug("Verbose debug")
+    """)
+
+    print("Yields (with debug):\n")
+    logger = Logger(level=logging.DEBUG)
+
+    logger.debug("Verbose debug")
 
     print("""\nNo colors:\n
     from logworks import logworks
@@ -91,7 +104,7 @@ class Logger(object):
     """Class to hold logging stuff."""
     
     # Constructor:
-    def __init__(self, conf_fn=None, use_color=True, formatter=DEFAULT_FORMATTER, which_logger=__name__):
+    def __init__(self, conf_fn=None, use_color=True, formatter=DEFAULT_FORMATTER, which_logger=__name__, level=logging.INFO):
         # If given a configuration file name, try to read it:
         if conf_fn:
             self.conf = Logger.read_conf(conf_fn)
@@ -103,16 +116,25 @@ class Logger(object):
 
         # Logger object:
         self.logger = logging.getLogger(which_logger)
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(level)
 
         # Console output handler:
         ch = logging.StreamHandler()
         ch.setFormatter(formatter)
-        ch.setLevel(logging.DEBUG)
+        ch.setLevel(level)
         self.logger.addHandler(ch)
 
 
     # Public methods:
+    def debug(self, text):
+        """Log (print) 'text' as debug."""
+
+        extra = {
+            "clevelname": self.with_debug_color("[DEBUG]"),
+        }
+
+        self.logger.debug(text, extra=extra)
+
     def info(self, text):
         """Log (print) 'text' as info."""
 
@@ -148,6 +170,11 @@ class Logger(object):
         }
 
         self.logger.error(text, extra=extra)
+
+    def with_debug_color(self, text):
+        """Return 'text' with color for name."""
+
+        return self._colorize_as(text, "debug")
 
     def with_name_color(self, text):
         """Return 'text' with color for name."""
