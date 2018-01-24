@@ -10,12 +10,19 @@ except pkg_resources.DistributionNotFound: # pkg not installed
     __version__ = None
 
 # Globals:
-DEFAULT_FORMATTER = logging.Formatter(
+DEFAULT_CONSOLE_FORMATTER = logging.Formatter(
     fmt='{asctime} {clevelname} {message}',
     datefmt="%Y-%m-%d %H:%M:%S",
     style="{"
 )
+DEFAULT_FILE_FORMATTER = logging.Formatter(
+    fmt='{asctime} [{levelname}] {message}',
+    datefmt="%Y-%m-%d %H:%M:%S",
+    style="{"
+)
 DEFAULT_CONF = {
+    "colorize": True,
+    "logfile": "logworks.log",
     "colorize": True,
     "colors": {
         "debug": 37,
@@ -85,7 +92,7 @@ def examples():
         datefmt="%H:%M:%S",
         style="{"
     )
-    logger = logworks.Logger(formatter=myformatter)
+    logger = logworks.Logger(console_formatter=myformatter)
     logger.info("This is some custom info")
     """)
 
@@ -95,7 +102,7 @@ def examples():
         datefmt="%H:%M:%S",
         style="{"
     )
-    logger = Logger(formatter=myformatter, which_logger="example3")
+    logger = Logger(console_formatter=myformatter, which_logger="example3")
     logger.info("This is some custom info")
 
 
@@ -104,7 +111,7 @@ class Logger(object):
     """Class to hold logging stuff."""
     
     # Constructor:
-    def __init__(self, conf_fn=None, use_color=True, formatter=DEFAULT_FORMATTER, which_logger=__name__, level=logging.INFO):
+    def __init__(self, conf_fn=None, use_color=True, console_formatter=DEFAULT_CONSOLE_FORMATTER, file_formatter=DEFAULT_FILE_FORMATTER,  which_logger=__name__, level=logging.INFO, console_output=True, file_output=False, logfile=None):
         # If given a configuration file name, try to read it:
         if conf_fn:
             self.conf = Logger.read_conf(conf_fn)
@@ -119,10 +126,19 @@ class Logger(object):
         self.logger.setLevel(level)
 
         # Console output handler:
-        ch = logging.StreamHandler()
-        ch.setFormatter(formatter)
-        ch.setLevel(level)
-        self.logger.addHandler(ch)
+        if console_output:
+            ch = logging.StreamHandler()
+            ch.setFormatter(console_formatter)
+            ch.setLevel(level)
+            self.logger.addHandler(ch)
+
+        # File output handler:
+        if file_output:
+            if not logfile:
+                logfile = self.conf["logfile"]
+            fh = logging.FileHandler(logfile)
+            fh.setFormatter(file_formatter)
+            self.logger.addHandler(fh)
 
 
     # Public methods:
@@ -257,6 +273,25 @@ class Logger(object):
             return text
 
         return "\033[{n}m{t}\033[0m".format(t=text, n=color_number)
+
+class FileLogger(Logger):
+    """A Logger() for file output only."""
+
+    # Constructor:
+    def __init__(self,
+            logfile=None,
+            conf_fn=None,
+            file_formatter=DEFAULT_FILE_FORMATTER,
+            which_logger=__name__,
+            level=logging.DEBUG):
+        super().__init__(
+                conf_fn=conf_fn,
+                file_formatter=file_formatter,
+                which_logger=which_logger,
+                level=level,
+                console_output=False,
+                file_output=True,
+                logfile=logfile)
 
 
 # If called directly, show some examples:
