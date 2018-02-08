@@ -111,7 +111,7 @@ class Logger(object):
     """Class to hold logging stuff."""
     
     # Constructor:
-    def __init__(self, conf_fn=None, use_color=True, console_formatter=DEFAULT_CONSOLE_FORMATTER, file_formatter=DEFAULT_FILE_FORMATTER,  which_logger=__name__, level=logging.INFO, console_output=True, file_output=False, logfile=None):
+    def __init__(self, conf_fn=None, use_color=True, console_formatter=DEFAULT_CONSOLE_FORMATTER, file_formatter=DEFAULT_FILE_FORMATTER,  which_logger=__name__, level=logging.INFO, console_output=True, file_output=True, logfile=None):
         # If given a configuration file name, try to read it:
         if conf_fn:
             self.conf = Logger.read_conf(conf_fn)
@@ -273,6 +273,25 @@ class Logger(object):
             return text
 
         return "\033[{n}m{t}\033[0m".format(t=text, n=color_number)
+
+class ConsoleLogger(Logger):
+    """A Logger() for console output only."""
+
+    # Constructor:
+    def __init__(self,
+            logfile=None,
+            conf_fn=None,
+            file_formatter=DEFAULT_FILE_FORMATTER,
+            which_logger=__name__,
+            level=logging.DEBUG):
+        super().__init__(
+                conf_fn=conf_fn,
+                file_formatter=file_formatter,
+                which_logger=which_logger,
+                level=level,
+                console_output=True,
+                file_output=False,
+                logfile=logfile)
 
 class FileLogger(Logger):
     """A Logger() for file output only."""
