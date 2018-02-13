@@ -1,4 +1,5 @@
 # Standard libs:
+import os
 import mock
 import logging
 import unittest
@@ -13,7 +14,6 @@ class TestLogger(unittest.TestCase):
 
     # Setup and teardown:
     def setUp(self):
-
         self.TEXTS = ["something", "yadda yadda", "", None]
         self.COLORS = {
             "name": 31,
@@ -21,15 +21,19 @@ class TestLogger(unittest.TestCase):
             "warning": 33,
             "error": 34,
         }
+        with mock.patch("sys.stdout"), mock.patch("sys.stderr"):
+            self.logger = logworks.Logger()
 
     def tearDown(self):
-        pass
+        logger = None
+        if os.path.isfile("logworks.log"):
+            os.unlink("logworks.log")
 
 
     # Test constructor:
     def test_constructor_no_args(self):
         # Run:
-        logger = logworks.Logger()
+        logger = self.logger
 
         # Assert:
         self.assertIsInstance(logger.conf, dict)
@@ -38,16 +42,17 @@ class TestLogger(unittest.TestCase):
     
     def test_constructor_no_color(self):
         # Run:
-        logger = logworks.Logger(use_color=False)
+        with mock.patch("sys.stdout", new_callable=StringIO) as stdout, mock.patch("sys.stderr"):
+            logger = logworks.Logger(use_color=False)
 
         # Assert:
         self.assertIsInstance(logger.conf, dict)
         self.assertEqual(logger.no_color, True)
         self.assertIsInstance(logger.logger, logging.Logger)
     
-    def test_constructor_with_conf_file(self):
+    def test_constructor_with_empty_conf_file(self):
         # Run:
-        with mock.patch("sys.stdout", new_callable=StringIO) as stdout:
+        with mock.patch("sys.stdout", new_callable=StringIO) as stdout, mock.patch("sys.stderr"):
             logger = logworks.Logger(conf_fn="whatever")
 
         # Assert:
@@ -60,7 +65,7 @@ class TestLogger(unittest.TestCase):
     # Test print shortcuts:
     def test_info(self):
         # Prepare:
-        logger = logworks.Logger()
+        logger = self.logger
         logger.logger.info = mock.Mock()
         logger.with_info_color = mock.Mock()
 
@@ -79,7 +84,7 @@ class TestLogger(unittest.TestCase):
 
     def test_warning(self):
         # Prepare:
-        logger = logworks.Logger()
+        logger = self.logger
         logger.logger.warning = mock.Mock()
         logger.with_warning_color = mock.Mock()
 
@@ -98,7 +103,7 @@ class TestLogger(unittest.TestCase):
 
     def test_error(self):
         # Prepare:
-        logger = logworks.Logger()
+        logger = self.logger
         logger.logger.error = mock.Mock()
         logger.with_error_color = mock.Mock()
 
@@ -119,7 +124,7 @@ class TestLogger(unittest.TestCase):
     # Test colorizers:
     def test_with_name_color(self):
         # Prepare:
-        logger = logworks.Logger()
+        logger = self.logger
 
         # Run:
         for text in self.TEXTS:
@@ -130,7 +135,7 @@ class TestLogger(unittest.TestCase):
 
     def test_with_info_color(self):
         # Prepare:
-        logger = logworks.Logger()
+        logger = self.logger
 
         # Run:
         for text in self.TEXTS:
@@ -141,7 +146,7 @@ class TestLogger(unittest.TestCase):
 
     def test_with_warning_color(self):
         # Prepare:
-        logger = logworks.Logger()
+        logger = self.logger
 
         # Run:
         for text in self.TEXTS:
@@ -152,7 +157,7 @@ class TestLogger(unittest.TestCase):
 
     def test_with_error_color(self):
         # Prepare:
-        logger = logworks.Logger()
+        logger = self.logger
 
         # Run:
         for text in self.TEXTS:
@@ -163,7 +168,7 @@ class TestLogger(unittest.TestCase):
 
     def test_colorize_as_with_colors(self):
         # Prepare:
-        logger = logworks.Logger()
+        logger = self.logger
         with mock.patch("logworks.logworks.Logger.use_colors"): # to be able to override it (being a @property)
             logger.use_colors = True
             logger.conf = {"colors": self.COLORS}
@@ -178,7 +183,7 @@ class TestLogger(unittest.TestCase):
 
     def test_colorize_as_without_colors(self):
         # Prepare:
-        logger = logworks.Logger()
+        logger = self.logger
         with mock.patch("logworks.logworks.Logger.use_colors"): # to be able to override it (being a @property)
             logger.use_colors = False
             logger.conf = {"colors": self.COLORS}
@@ -192,7 +197,7 @@ class TestLogger(unittest.TestCase):
 
     def test_color_for_can(self):
         # Prepare:
-        logger = logworks.Logger()
+        logger = self.logger
         logger.conf = {"colors": self.COLORS}
 
         for which in self.COLORS:
@@ -204,7 +209,7 @@ class TestLogger(unittest.TestCase):
 
     def test_color_for_cant(self):
         # Prepare:
-        logger = logworks.Logger()
+        logger = self.logger
         logger.conf = {}
 
         for which in self.COLORS:
@@ -235,14 +240,14 @@ class TestLogger(unittest.TestCase):
     # Test other:
     def test_use_colors_no_conf(self):
         # Prepare:
-        logger = logworks.Logger()
+        logger = self.logger
 
         # Assert:
         self.assertTrue(logger.use_colors)
 
     def test_use_colors_empty_conf(self):
         # Prepare:
-        logger = logworks.Logger()
+        logger = self.logger
         logger.conf = {}
 
         # Assert:
@@ -250,7 +255,7 @@ class TestLogger(unittest.TestCase):
 
     def test_use_colors_nocolor_overrides(self):
         # Prepare:
-        logger = logworks.Logger()
+        logger = self.logger
         logger.no_color = True
         logger.conf = {"colorize": True}
 
@@ -259,7 +264,7 @@ class TestLogger(unittest.TestCase):
 
     def test_use_colors_yes(self):
         # Prepare:
-        logger = logworks.Logger()
+        logger = self.logger
         logger.nocolor = False
         logger.conf = {"colorize": True}
 
@@ -295,8 +300,120 @@ class TestLogger(unittest.TestCase):
         # Assert:
         self.assertEqual(ret, {})
 
+class TestConsoleLogger(unittest.TestCase):
+    """Test ConsoleLogger() class."""
+
+    # Setup and teardown:
+    def setUp(self):
+        self.TEXTS = ["something", "yadda yadda", "", None]
+        self.COLORS = {
+            "name": 31,
+            "info": 32,
+            "warning": 33,
+            "error": 34,
+        }
+        with mock.patch("sys.stdout"), mock.patch("sys.stderr"):
+            self.logger = logworks.ConsoleLogger()
+
+    def tearDown(self):
+        logger = None
+        if os.path.isfile("logworks.log"):
+            os.unlink("logworks.log")
+
+
+    # Test constructor:
+    def test_constructor_no_args(self):
+        # Run:
+        logger = self.logger
+
+        # Assert:
+        self.assertIsInstance(logger.conf, dict)
+        self.assertEqual(logger.no_color, False)
+        self.assertIsInstance(logger.logger, logging.Logger)
+    
+    def test_constructor_no_color(self):
+        # Run:
+        with mock.patch("sys.stdout"), mock.patch("sys.stderr"):
+            logger = logworks.ConsoleLogger(use_color=False)
+
+        # Assert:
+        self.assertIsInstance(logger.conf, dict)
+        self.assertEqual(logger.no_color, True)
+        self.assertIsInstance(logger.logger, logging.Logger)
+    
+    def test_constructor_with_empty_conf_file(self):
+        # Run:
+        with mock.patch("sys.stdout", new_callable=StringIO) as stdout, mock.patch("sys.stderr"):
+            logger = logworks.ConsoleLogger(conf_fn="whatever")
+
+        # Assert:
+        self.assertIsInstance(stdout.getvalue(), str)
+        self.assertIsInstance(logger.conf, dict)
+        self.assertEqual(logger.conf, {})
+        self.assertIsInstance(logger.logger, logging.Logger)
+    
+class TestFileLogger(unittest.TestCase):
+    """Test ConsoleLogger() class."""
+
+    # Setup and teardown:
+    def setUp(self):
+        self.TEXTS = ["something", "yadda yadda", "", None]
+        self.COLORS = {
+            "name": 31,
+            "info": 32,
+            "warning": 33,
+            "error": 34,
+        }
+        with mock.patch("sys.stdout"), mock.patch("sys.stderr"):
+            self.logger = logworks.FileLogger()
+
+    def tearDown(self):
+        logger = None
+        if os.path.isfile("logworks.log"):
+            os.unlink("logworks.log")
+
+
+    # Test constructor:
+    def test_constructor_no_args(self):
+        # Run:
+        logger = self.logger
+
+        # Assert:
+        self.assertIsInstance(logger.conf, dict)
+        self.assertEqual(logger.no_color, True)
+        self.assertIsInstance(logger.logger, logging.Logger)
+    
+    def test_constructor_no_color(self):
+        # Run:
+        logger = self.logger
+
+        # Assert:
+        self.assertIsInstance(logger.conf, dict)
+        self.assertEqual(logger.no_color, True)
+        self.assertIsInstance(logger.logger, logging.Logger)
+    
+    def test_constructor_with_empty_conf_file(self):
+        # Run:
+        with mock.patch("sys.stdout", new_callable=StringIO) as stdout, mock.patch("sys.stderr"):
+            logger = logworks.ConsoleLogger(conf_fn="whatever")
+
+        # Assert:
+        self.assertIsInstance(stdout.getvalue(), str)
+        self.assertIsInstance(logger.conf, dict)
+        self.assertEqual(logger.conf, {})
+        self.assertIsInstance(logger.logger, logging.Logger)
+    
 class TestMain(unittest.TestCase):
     """Test stuff outside Logger() class."""
+
+    # Setup and teardown:
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        if os.path.isfile("logworks.log"):
+            os.unlink("logworks.log")
+
 
     # Test version:
     def test_version_ok(self):
@@ -321,9 +438,11 @@ class TestMain(unittest.TestCase):
     # Test examples:
     def test_examples(self):
         # Run:
-        with mock.patch("sys.stdout", new_callable=StringIO) as stdout, mock.patch("sys.stderr", new_callable=StringIO) as stderr:
+        with mock.patch("sys.stdout", new_callable=StringIO) as stdout, \
+             mock.patch("sys.stderr", new_callable=StringIO) as stderr:
             logworks.examples()
 
         # Assert:
         self.assertIsInstance(stdout.getvalue(), str)
         self.assertIsInstance(stderr.getvalue(), str)
+

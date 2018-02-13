@@ -38,9 +38,9 @@ DEFAULT_CONF = {
 def examples():
     """Show some examples."""
 
-    print("#\n# Some examples\n#\n")
+    print("#\n# Some examples\n#")
 
-    print("""Code:\n
+    print("""Code:
     from logworks import logworks
     logger = logworks.Logger()
     logger.debug("Verbose debug")
@@ -50,25 +50,25 @@ def examples():
     logger.error("Something went wrong")
     """)
 
-    print("Yields (no debug):\n")
+    print("Yields (no debug):")
     logger = Logger()
     logger.info("This is some info")
     logger.ok("Everything is ok")
     logger.warning("Danger! Danger!")
     logger.error("Something went wrong")
 
-    print("""Code:\n
+    print("""\nCode:
     from logworks import logworks
     logger = Logger(level=logging.DEBUG)
     logger.debug("Verbose debug")
     """)
 
-    print("Yields (with debug):\n")
+    print("Yields (with debug):")
     logger = Logger(level=logging.DEBUG)
 
-    logger.debug("Verbose debug")
+    logger.debug("Verbose debugrrr")
 
-    print("""\nNo colors:\n
+    print("""\nNo colors:
     from logworks import logworks
     logger = logworks.Logger(use_color=False)
     logger.info("This is some info")
@@ -77,14 +77,14 @@ def examples():
     logger.error("Something went wrong")
     """)
 
-    print("Yields:\n")
+    print("Yields:")
     logger = Logger(use_color=False, which_logger="example2")
     logger.info("This is some info")
     logger.ok("Everything is ok")
     logger.warning("Danger! Danger!")
     logger.error("Something went wrong")
 
-    print("""\nCustom formatter:\n
+    print("""\nCustom formatter:
     import logging
     from logworks import logworks
     myformatter = logging.Formatter(
@@ -96,7 +96,7 @@ def examples():
     logger.info("This is some custom info")
     """)
 
-    print("Yields:\n")
+    print("Yields:")
     myformatter = logging.Formatter(
         fmt='{clevelname} - {asctime} - {message}',
         datefmt="%H:%M:%S",
@@ -135,10 +135,12 @@ class Logger(object):
         # File output handler:
         if file_output:
             if not logfile:
-                logfile = self.conf["logfile"]
-            fh = logging.FileHandler(logfile)
-            fh.setFormatter(file_formatter)
-            self.logger.addHandler(fh)
+                logfile = self.conf.get("logfile", None)
+
+            if logfile:
+                fh = logging.FileHandler(logfile)
+                fh.setFormatter(file_formatter)
+                self.logger.addHandler(fh)
 
 
     # Public methods:
@@ -283,6 +285,7 @@ class ConsoleLogger(Logger):
             conf_fn=None,
             file_formatter=DEFAULT_FILE_FORMATTER,
             which_logger=__name__,
+            use_color=True,
             level=logging.DEBUG):
         super().__init__(
                 conf_fn=conf_fn,
@@ -290,6 +293,7 @@ class ConsoleLogger(Logger):
                 which_logger=which_logger,
                 level=level,
                 console_output=True,
+                use_color=use_color,
                 file_output=False,
                 logfile=logfile)
 
@@ -310,6 +314,7 @@ class FileLogger(Logger):
                 level=level,
                 console_output=False,
                 file_output=True,
+                use_color=False,
                 logfile=logfile)
 
 
