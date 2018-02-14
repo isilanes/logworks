@@ -316,9 +316,7 @@ class TestConsoleLogger(unittest.TestCase):
             self.logger = logworks.ConsoleLogger()
 
     def tearDown(self):
-        logger = None
-        if os.path.isfile("logworks.log"):
-            os.unlink("logworks.log")
+        pass
 
 
     # Test constructor:
