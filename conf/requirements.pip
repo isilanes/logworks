@@ -1,5 +1,6 @@
 coverage==4.5.1
 mock==2.0.0
 pbr==4.0.1
+setuptools-scm==2.0.0
 six==1.11.0
 testfixtures==6.0.0
