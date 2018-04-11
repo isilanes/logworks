@@ -6,7 +6,7 @@ import pkg_resources
 # Version:
 try:
     __version__ = pkg_resources.get_distribution("logworks").version
-except pkg_resources.DistributionNotFound: # pkg not installed
+except pkg_resources.DistributionNotFound:  # pkg not installed
     __version__ = None
 
 # Globals:
@@ -23,7 +23,6 @@ DEFAULT_FILE_FORMATTER = logging.Formatter(
 DEFAULT_CONF = {
     "colorize": True,
     "logfile": "logworks.log",
-    "colorize": True,
     "colors": {
         "debug": 37,
         "info": 34,
@@ -33,6 +32,7 @@ DEFAULT_CONF = {
         "ok": 32,
     }
 }
+
 
 # Functions:
 def examples():
@@ -111,7 +111,9 @@ class Logger(object):
     """Class to hold logging stuff."""
     
     # Constructor:
-    def __init__(self, conf_fn=None, use_color=True, console_formatter=DEFAULT_CONSOLE_FORMATTER, file_formatter=DEFAULT_FILE_FORMATTER,  which_logger=__name__, level=logging.INFO, console_output=True, file_output=True, logfile=None):
+    def __init__(self, conf_fn=None, use_color=True, console_formatter=DEFAULT_CONSOLE_FORMATTER,
+                 file_formatter=DEFAULT_FILE_FORMATTER, which_logger=__name__, level=logging.INFO,
+                 console_output=True, file_output=True, logfile=None):
         # If given a configuration file name, try to read it:
         if conf_fn:
             self.conf = Logger.read_conf(conf_fn)
@@ -141,7 +143,6 @@ class Logger(object):
                 fh = logging.FileHandler(logfile)
                 fh.setFormatter(file_formatter)
                 self.logger.addHandler(fh)
-
 
     # Public methods:
     def debug(self, text):
@@ -219,7 +220,6 @@ class Logger(object):
 
         return self._colorize_as(text, "warning")
 
-
     # Private methods:
     def _colorize_as(self, text, which):
         """Return 'text' with color for 'which' type of text."""
@@ -237,7 +237,6 @@ class Logger(object):
         except:
             return 0
 
-
     # Public properties:
     @property
     def use_colors(self):
@@ -248,7 +247,6 @@ class Logger(object):
             return False
 
         return "colorize" in self.conf and self.conf["colorize"]
-
 
     # Static methods:
     @staticmethod
@@ -276,17 +274,18 @@ class Logger(object):
 
         return "\033[{n}m{t}\033[0m".format(t=text, n=color_number)
 
+
 class ConsoleLogger(Logger):
     """A Logger() for console output only."""
 
     # Constructor:
     def __init__(self,
-            logfile=None,
-            conf_fn=None,
-            file_formatter=DEFAULT_FILE_FORMATTER,
-            which_logger=__name__,
-            use_color=True,
-            level=logging.DEBUG):
+                 logfile=None,
+                 conf_fn=None,
+                 file_formatter=DEFAULT_FILE_FORMATTER,
+                 which_logger=__name__,
+                 use_color=True,
+                 level=logging.DEBUG):
         super().__init__(
                 conf_fn=conf_fn,
                 file_formatter=file_formatter,
@@ -297,16 +296,17 @@ class ConsoleLogger(Logger):
                 file_output=False,
                 logfile=logfile)
 
+
 class FileLogger(Logger):
     """A Logger() for file output only."""
 
     # Constructor:
     def __init__(self,
-            logfile=None,
-            conf_fn=None,
-            file_formatter=DEFAULT_FILE_FORMATTER,
-            which_logger=__name__,
-            level=logging.DEBUG):
+                 logfile=None,
+                 conf_fn=None,
+                 file_formatter=DEFAULT_FILE_FORMATTER,
+                 which_logger=__name__,
+                 level=logging.DEBUG):
         super().__init__(
                 conf_fn=conf_fn,
                 file_formatter=file_formatter,
@@ -321,4 +321,3 @@ class FileLogger(Logger):
 # If called directly, show some examples:
 if __name__ == "__main__":
     examples()
-
