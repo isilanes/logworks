@@ -5,6 +5,8 @@ I make it public with best wishes, but no implication is made about its potentia
 
 ## Some examples
 
+NOTE: GitHub's markdown parser discards some HTML. As a result, the outputs below lack color.
+
 ### Default
 
 ```python
