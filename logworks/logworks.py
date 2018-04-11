@@ -34,78 +34,6 @@ DEFAULT_CONF = {
 }
 
 
-# Functions:
-def examples():
-    """Show some examples."""
-
-    print("#\n# Some examples\n#")
-
-    print("""Code:
-    from logworks import logworks
-    logger = logworks.Logger()
-    logger.debug("Verbose debug")
-    logger.info("This is some info")
-    logger.ok("Everything is ok")
-    logger.warning("Danger! Danger!")
-    logger.error("Something went wrong")
-    """)
-
-    print("Yields (no debug):")
-    logger = Logger()
-    logger.info("This is some info")
-    logger.ok("Everything is ok")
-    logger.warning("Danger! Danger!")
-    logger.error("Something went wrong")
-
-    print("""\nCode:
-    from logworks import logworks
-    logger = Logger(level=logging.DEBUG)
-    logger.debug("Verbose debug")
-    """)
-
-    print("Yields (with debug):")
-    logger = Logger(level=logging.DEBUG)
-
-    logger.debug("Verbose debugrrr")
-
-    print("""\nNo colors:
-    from logworks import logworks
-    logger = logworks.Logger(use_color=False)
-    logger.info("This is some info")
-    logger.ok("Everything is ok")
-    logger.warning("Danger! Danger!")
-    logger.error("Something went wrong")
-    """)
-
-    print("Yields:")
-    logger = Logger(use_color=False, which_logger="example2")
-    logger.info("This is some info")
-    logger.ok("Everything is ok")
-    logger.warning("Danger! Danger!")
-    logger.error("Something went wrong")
-
-    print("""\nCustom formatter:
-    import logging
-    from logworks import logworks
-    myformatter = logging.Formatter(
-        fmt='{clevelname} - {asctime} - {message}',
-        datefmt="%H:%M:%S",
-        style="{"
-    )
-    logger = logworks.Logger(console_formatter=myformatter)
-    logger.info("This is some custom info")
-    """)
-
-    print("Yields:")
-    myformatter = logging.Formatter(
-        fmt='{clevelname} - {asctime} - {message}',
-        datefmt="%H:%M:%S",
-        style="{"
-    )
-    logger = Logger(console_formatter=myformatter, which_logger="example3")
-    logger.info("This is some custom info")
-
-
 # Classes:
 class Logger(object):
     """Class to hold logging stuff."""
@@ -317,7 +245,3 @@ class FileLogger(Logger):
                 use_color=False,
                 logfile=logfile)
 
-
-# If called directly, show some examples:
-if __name__ == "__main__":
-    examples()

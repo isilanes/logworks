@@ -8,6 +8,7 @@ from io import StringIO
 # Our libs:
 from logworks import logworks
 
+
 # Classes:
 class TestLogger(unittest.TestCase):
     """Test Logger() class."""
@@ -28,7 +29,6 @@ class TestLogger(unittest.TestCase):
         logger = None
         if os.path.isfile("logworks.log"):
             os.unlink("logworks.log")
-
 
     # Test constructor:
     def test_constructor_no_args(self):
@@ -61,7 +61,6 @@ class TestLogger(unittest.TestCase):
         self.assertEqual(logger.conf, {})
         self.assertIsInstance(logger.logger, logging.Logger)
     
-
     # Test print shortcuts:
     def test_info(self):
         # Prepare:
@@ -119,7 +118,6 @@ class TestLogger(unittest.TestCase):
             logger.logger.error.assert_called_once()
             self.assertIn(text, logger.logger.error.call_args[0])
             logger.with_error_color.assert_called_once()
-
 
     # Test colorizers:
     def test_with_name_color(self):
@@ -236,7 +234,6 @@ class TestLogger(unittest.TestCase):
             # Assert:
             self.assertEqual(ret, text)
 
-
     # Test other:
     def test_use_colors_no_conf(self):
         # Prepare:
@@ -300,6 +297,7 @@ class TestLogger(unittest.TestCase):
         # Assert:
         self.assertEqual(ret, {})
 
+
 class TestConsoleLogger(unittest.TestCase):
     """Test ConsoleLogger() class."""
 
@@ -317,7 +315,6 @@ class TestConsoleLogger(unittest.TestCase):
 
     def tearDown(self):
         pass
-
 
     # Test constructor:
     def test_constructor_no_args(self):
@@ -349,7 +346,8 @@ class TestConsoleLogger(unittest.TestCase):
         self.assertIsInstance(logger.conf, dict)
         self.assertEqual(logger.conf, {})
         self.assertIsInstance(logger.logger, logging.Logger)
-    
+
+
 class TestFileLogger(unittest.TestCase):
     """Test ConsoleLogger() class."""
 
@@ -369,7 +367,6 @@ class TestFileLogger(unittest.TestCase):
         logger = None
         if os.path.isfile("logworks.log"):
             os.unlink("logworks.log")
-
 
     # Test constructor:
     def test_constructor_no_args(self):
@@ -400,7 +397,8 @@ class TestFileLogger(unittest.TestCase):
         self.assertIsInstance(logger.conf, dict)
         self.assertEqual(logger.conf, {})
         self.assertIsInstance(logger.logger, logging.Logger)
-    
+
+
 class TestMain(unittest.TestCase):
     """Test stuff outside Logger() class."""
 
@@ -411,7 +409,6 @@ class TestMain(unittest.TestCase):
     def tearDown(self):
         if os.path.isfile("logworks.log"):
             os.unlink("logworks.log")
-
 
     # Test version:
     def test_version_ok(self):
@@ -431,16 +428,4 @@ class TestMain(unittest.TestCase):
 
         # Clean:
         importlib.reload(logworks)
-
-
-    # Test examples:
-    def test_examples(self):
-        # Run:
-        with mock.patch("sys.stdout", new_callable=StringIO) as stdout, \
-             mock.patch("sys.stderr", new_callable=StringIO) as stderr:
-            logworks.examples()
-
-        # Assert:
-        self.assertIsInstance(stdout.getvalue(), str)
-        self.assertIsInstance(stderr.getvalue(), str)
 
