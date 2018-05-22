@@ -8,7 +8,7 @@ def long_description():
 
 setup(
     name="logworks",
-    packages=find_packages("logworks"),
+    packages=find_packages(),
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
     description="logworks is a convenience wrapper for the logging Python module.",
@@ -17,12 +17,10 @@ setup(
     url="https://github.com/isilanes/logworks",
     author="Iñaki Silanes Cristóbal",
     author_email="isilanes@gmail.com",
-    license="GPLv3",
     keywords=["logging"],
     classifiers=(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ),
-    zip_safe=False
 )
