@@ -1,0 +1,17 @@
+--- TODO
+
+  * 100% test coverage
+  * provide all functionality from logworks, do not require logging (e.g. for formatting)
+
+--- current
+  
+  * 93% test coverage
+  * Added CHANGELOG.txt (this file)
+
+--- v0.7.5 [2018.05.22]
+
+  * Multiple bugfixes for PyPI
+
+--- v0.7 [2018.05.22]
+
+  * First version in PyPI
