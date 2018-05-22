@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def long_description():
@@ -8,7 +8,7 @@ def long_description():
 
 setup(
     name="logworks",
-    packages=["logworks"],
+    packages=find_packages("logworks"),
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
     description="logworks is a convenience wrapper for the logging Python module.",
