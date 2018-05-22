@@ -1,0 +1,4 @@
+# For uploading to PyPI:
+rm -rf dist/ build/ logworks.egg-info/
+python setup.py sdist bdist_wheel
+twine upload --repository testpypi dist/*
