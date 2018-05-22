@@ -5,3 +5,5 @@ __pycache__
 .eggs
 *.egg-info
 .idea
+build/
+dist/
