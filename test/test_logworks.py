@@ -6,7 +6,7 @@ import unittest
 from io import StringIO
 
 # Our libs:
-from logworks import logworks
+from src import logworks
 
 
 # Classes:
@@ -167,7 +167,7 @@ class TestLogger(unittest.TestCase):
     def test_colorize_as_with_colors(self):
         # Prepare:
         logger = self.logger
-        with mock.patch("logworks.logworks.Logger.use_colors"): # to be able to override it (being a @property)
+        with mock.patch("src.logworks.Logger.use_colors"): # to be able to override it (being a @property)
             logger.use_colors = True
             logger.conf = {"colors": self.COLORS}
 
@@ -182,7 +182,7 @@ class TestLogger(unittest.TestCase):
     def test_colorize_as_without_colors(self):
         # Prepare:
         logger = self.logger
-        with mock.patch("logworks.logworks.Logger.use_colors"): # to be able to override it (being a @property)
+        with mock.patch("src.logworks.Logger.use_colors"): # to be able to override it (being a @property)
             logger.use_colors = False
             logger.conf = {"colors": self.COLORS}
 

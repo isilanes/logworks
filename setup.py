@@ -5,10 +5,10 @@ def long_description():
     with open("README.md", "r") as f:
         return f.read()
 
-
 setup(
     name="logworks",
-    packages=find_packages(),
+    packages=["logworks"],
+    package_dir={"logworks": "src"},  # directory "src" contains package "logworks"
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
     description="logworks is a convenience wrapper for the logging Python module.",
