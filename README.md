@@ -12,7 +12,7 @@ NOTE: GitHub's markdown parser discards some HTML. As a result, the outputs belo
 ```python
 from logworks import logworks
 
-logger = logworks.Logger()
+logger = logworks.ConsoleLogger()
 
 logger.debug("Verbose debug")
 logger.info("This is some info")
@@ -36,7 +36,7 @@ Yields the following (your exact colors may vary). Note debug text is not logged
 import logging
 from logworks import logworks
 
-logger = logworks.Logger(level=logging.DEBUG)
+logger = logworks.ConsoleLogger(level=logging.DEBUG)
 
 logger.debug("Verbose debug")
 ```
@@ -52,7 +52,7 @@ Yields (now it logs debug). Note that default color for debug is no color.
 ```python
 from logworks import logworks
 
-logger = logworks.Logger(use_color=False)
+logger = logworks.ConsoleLogger(use_color=False)
 
 logger.info("This is some info")
 logger.ok("Everything is ok")
@@ -72,16 +72,14 @@ Yields:
 ### Custom formatter
 
 ```python
-import logging
 from logworks import logworks
 
-myformatter = logging.Formatter(
-    fmt='{clevelname} - {asctime} - {message}',
-    datefmt="%H:%M:%S",
-    style="{"
+myformatter = logworks.get_formatter(
+    format='{clevelname} - {asctime} - {message}',
+    date_format="%H:%M:%S"
 )
 
-logger = logworks.Logger(console_formatter=myformatter)
+logger = logworks.ConsoleLogger(console_formatter=myformatter)
 
 logger.info("This is some custom info")
 ```

@@ -26,7 +26,7 @@ class TestLogger(unittest.TestCase):
             self.logger = logworks.Logger()
 
     def tearDown(self):
-        logger = None
+        self.logger = None
         if os.path.isfile("logworks.log"):
             os.unlink("logworks.log")
 
@@ -424,7 +424,7 @@ class TestFileLogger(unittest.TestCase):
             self.logger = logworks.FileLogger()
 
     def tearDown(self):
-        logger = None
+        self.logger = None
         if os.path.isfile("logworks.log"):
             os.unlink("logworks.log")
 
@@ -471,17 +471,17 @@ class TestMain(unittest.TestCase):
             os.unlink("logworks.log")
 
     # Test version:
-    @unittest.skip("this test is impossible?")
+    @unittest.skip("is this test impossible?")
     def test_version_ok(self):
         self.assertIsInstance(logworks.__version__, str)
 
     def test_version_ko(self):
-        # Preprare:
+        # Prepare:
         import importlib
         import pkg_resources
         
         # Run:
-        with mock.patch("pkg_resources.get_distribution", side_effect=pkg_resources.DistributionNotFound) as mock_pkg:
+        with mock.patch("pkg_resources.get_distribution", side_effect=pkg_resources.DistributionNotFound):
             importlib.reload(logworks)
         
         # Assert:
@@ -490,3 +490,23 @@ class TestMain(unittest.TestCase):
         # Clean:
         importlib.reload(logworks)
 
+    # Other:
+    def test_get_formatter_default(self):
+        # Run:
+        fmt = logworks.get_formatter()
+
+        # Assert:
+        self.assertIsInstance(fmt, logging.Formatter)
+
+    @unittest.skip("right now, this is useless")
+    def test_get_formatter_custom_format(self):
+        # We use a specific name for logger, to override logger(s) generated in previous tests:
+        fmt = logworks.get_formatter(format='{clevelname} - {message}')
+        logger = logworks.ConsoleLogger(
+            which_logger="test_get_formatter_custom_format",
+            console_formatter=fmt,
+        )
+        ###logger.info("post")
+
+        # Assert:
+        self.assertIsInstance(fmt, logging.Formatter)

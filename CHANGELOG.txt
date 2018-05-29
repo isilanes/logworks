@@ -1,17 +1,18 @@
 --- TODO
 
-  * provide all functionality from logworks, do not require logging (e.g. for formatting)
+  - Be able to capture logged string in tests
 
 --- current
   
-  * 100% test coverage
-  * Added CHANGELOG.txt (this file)
-  * ignored test_version_ok() test (which should and does fail)
+  - 100% test coverage
+  - Added CHANGELOG.txt (this file)
+  - Ignored test_version_ok() test (which should and does fail)
+  - Provided all functionality from logworks, do not require import logging
 
 --- v0.7.5 [2018.05.22]
 
-  * Multiple bugfixes for PyPI
+  - Multiple bugfixes for PyPI
 
 --- v0.7 [2018.05.22]
 
-  * First version in PyPI
+  - First version in PyPI

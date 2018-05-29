@@ -34,6 +34,17 @@ DEFAULT_CONF = {
 }
 
 
+# Functions:
+def get_formatter(format='{asctime} {clevelname} {message}', date_format="%Y-%m-%d %H:%M:%S"):
+    """Helper to produce a custom logging format."""
+
+    return logging.Formatter(
+        fmt=format,
+        datefmt=date_format,
+        style="{"
+    )
+
+
 # Classes:
 class Logger(object):
     """Class to hold logging stuff."""
@@ -210,13 +221,13 @@ class ConsoleLogger(Logger):
     def __init__(self,
                  logfile=None,
                  conf_fn=None,
-                 file_formatter=DEFAULT_FILE_FORMATTER,
+                 console_formatter=DEFAULT_CONSOLE_FORMATTER,
                  which_logger=__name__,
                  use_color=True,
                  level=logging.DEBUG):
         super().__init__(
                 conf_fn=conf_fn,
-                file_formatter=file_formatter,
+                console_formatter=console_formatter,
                 which_logger=which_logger,
                 level=level,
                 console_output=True,
