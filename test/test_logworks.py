@@ -119,6 +119,44 @@ class TestLogger(unittest.TestCase):
             self.assertIn(text, logger.logger.error.call_args[0])
             logger.with_error_color.assert_called_once()
 
+    def test_debug(self):
+        # Prepare:
+        logger = self.logger
+        logger.logger.debug = mock.Mock()
+        logger.with_debug_color = mock.Mock()
+
+        for text in self.TEXTS:
+            # Prepare:
+            logger.logger.debug.reset_mock()
+            logger.with_debug_color.reset_mock()
+
+            # Run:
+            logger.debug(text)
+
+            # Assert:
+            logger.logger.debug.assert_called_once()
+            self.assertIn(text, logger.logger.debug.call_args[0])
+            logger.with_debug_color.assert_called_once()
+
+    def test_ok(self):
+        # Prepare:
+        logger = self.logger
+        logger.logger.info = mock.Mock()  # yes, "info". This is correct.
+        logger.with_ok_color = mock.Mock()
+
+        for text in self.TEXTS:
+            # Prepare:
+            logger.logger.info.reset_mock()
+            logger.with_ok_color.reset_mock()
+
+            # Run:
+            logger.ok(text)
+
+            # Assert:
+            logger.logger.info.assert_called_once()
+            self.assertIn(text, logger.logger.info.call_args[0])
+            logger.with_ok_color.assert_called_once()
+
     # Test colorizers:
     def test_with_name_color(self):
         # Prepare:
@@ -160,6 +198,28 @@ class TestLogger(unittest.TestCase):
         # Run:
         for text in self.TEXTS:
             ret = logger.with_error_color(text)
+
+            # Assert:
+            self.assertIn(str(text), str(ret))
+
+    def test_with_debug_color(self):
+        # Prepare:
+        logger = self.logger
+
+        # Run:
+        for text in self.TEXTS:
+            ret = logger.with_debug_color(text)
+
+            # Assert:
+            self.assertIn(str(text), str(ret))
+
+    def test_with_ok_color(self):
+        # Prepare:
+        logger = self.logger
+
+        # Run:
+        for text in self.TEXTS:
+            ret = logger.with_ok_color(text)
 
             # Assert:
             self.assertIn(str(text), str(ret))

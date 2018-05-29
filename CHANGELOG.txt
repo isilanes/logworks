@@ -1,11 +1,10 @@
 --- TODO
 
-  * 100% test coverage
   * provide all functionality from logworks, do not require logging (e.g. for formatting)
 
 --- current
   
-  * 93% test coverage
+  * 100% test coverage
   * Added CHANGELOG.txt (this file)
   * ignored test_version_ok() test (which should and does fail)
 

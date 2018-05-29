@@ -5,6 +5,7 @@ def long_description():
     with open("README.md", "r") as f:
         return f.read()
 
+
 setup(
     name="logworks",
     packages=["logworks"],
