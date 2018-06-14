@@ -1,11 +1,13 @@
+# Standard libs:
 from setuptools import setup, find_packages
 
 
+# Functions:
 def long_description():
     with open("README.md", "r") as f:
         return f.read()
 
-
+# Meat:
 setup(
     name="logworks",
     packages=["logworks"],
